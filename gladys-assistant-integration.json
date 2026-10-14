@@ -1,0 +1,860 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Tailscale",
+  "description": {
+    "en": "Watch the machines of your Tailscale network: online status, updates and key expiry.",
+    "fr": "Surveillez les machines de votre réseau Tailscale : connexion, mises à jour, clés.",
+    "de": "Überwache die Geräte deines Tailscale-Netzes: Verbindung, Updates und Schlüssel.",
+    "es": "Supervise las máquinas de su red Tailscale: conexión, actualizaciones y claves."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-tailscale:1.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-tailscale/main/cover.png",
+  "categories": ["network", "security"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "The integration reads your tailnet through the Tailscale API, in the cloud: nothing to install on your machines. Create an API access token (Settings → Keys, it expires after 90 days at most) or, better, an OAuth client with the \"devices:core\" scope (Settings → OAuth clients, it never expires), then paste it below.",
+        "fr": "L'intégration lit votre tailnet via l'API Tailscale, dans le cloud : rien à installer sur vos machines. Créez un jeton d'accès API (Settings → Keys, il expire au plus tard après 90 jours) ou, mieux, un client OAuth avec le droit « devices:core » (Settings → OAuth clients, il n'expire jamais), puis collez-le ci-dessous.",
+        "de": "Die Integration liest dein Tailnet über die Tailscale-API in der Cloud: Auf deinen Geräten muss nichts installiert werden. Erstelle ein API-Zugriffstoken (Settings → Keys, es läuft nach höchstens 90 Tagen ab) oder besser einen OAuth-Client mit dem Bereich „devices:core“ (Settings → OAuth clients, er läuft nie ab) und füge ihn unten ein.",
+        "es": "La integración lee su tailnet a través de la API de Tailscale, en la nube: no hay nada que instalar en sus máquinas. Cree un token de acceso API (Settings → Keys, caduca como máximo a los 90 días) o, mejor, un cliente OAuth con el permiso «devices:core» (Settings → OAuth clients, nunca caduca) y péguelo abajo."
+      },
+      "links": [
+        {
+          "url": "https://login.tailscale.com/admin/settings/keys",
+          "label": {
+            "en": "API access tokens",
+            "fr": "Jetons d'accès API",
+            "de": "API-Zugriffstokens",
+            "es": "Tokens de acceso API"
+          }
+        },
+        {
+          "url": "https://login.tailscale.com/admin/settings/oauth",
+          "label": {
+            "en": "OAuth clients",
+            "fr": "Clients OAuth",
+            "de": "OAuth-Clients",
+            "es": "Clientes OAuth"
+          }
+        }
+      ]
+    },
+    {
+      "key": "auth_method",
+      "type": "select",
+      "label": {
+        "en": "Sign-in method",
+        "fr": "Méthode de connexion",
+        "de": "Anmeldemethode",
+        "es": "Método de conexión"
+      },
+      "required": true,
+      "default": "api_key",
+      "options": [
+        {
+          "value": "api_key",
+          "label": {
+            "en": "API access token",
+            "fr": "Jeton d'accès API",
+            "de": "API-Zugriffstoken",
+            "es": "Token de acceso API"
+          }
+        },
+        {
+          "value": "oauth",
+          "label": {
+            "en": "OAuth client (never expires)",
+            "fr": "Client OAuth (n'expire jamais)",
+            "de": "OAuth-Client (läuft nie ab)",
+            "es": "Cliente OAuth (nunca caduca)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "API access token",
+        "fr": "Jeton d'accès API",
+        "de": "API-Zugriffstoken",
+        "es": "Token de acceso API"
+      },
+      "description": {
+        "en": "Only for the \"API access token\" method.",
+        "fr": "Uniquement pour la méthode « Jeton d'accès API ».",
+        "de": "Nur für die Methode „API-Zugriffstoken“.",
+        "es": "Solo para el método «Token de acceso API»."
+      },
+      "placeholder": {
+        "en": "tskey-api-…",
+        "fr": "tskey-api-…",
+        "de": "tskey-api-…",
+        "es": "tskey-api-…"
+      },
+      "required": false
+    },
+    {
+      "key": "oauth_client_id",
+      "type": "string",
+      "label": {
+        "en": "OAuth client ID",
+        "fr": "ID du client OAuth",
+        "de": "Client-ID des OAuth-Clients",
+        "es": "ID del cliente OAuth"
+      },
+      "description": {
+        "en": "Only for the \"OAuth client\" method.",
+        "fr": "Uniquement pour la méthode « Client OAuth ».",
+        "de": "Nur für die Methode „OAuth-Client“.",
+        "es": "Solo para el método «Cliente OAuth»."
+      },
+      "placeholder": {
+        "en": "e.g. k1a2b3c4d5CNTRL",
+        "fr": "ex. k1a2b3c4d5CNTRL",
+        "de": "z. B. k1a2b3c4d5CNTRL",
+        "es": "p. ej. k1a2b3c4d5CNTRL"
+      },
+      "required": false
+    },
+    {
+      "key": "oauth_client_secret",
+      "type": "secret",
+      "label": {
+        "en": "OAuth client secret",
+        "fr": "Secret du client OAuth",
+        "de": "Secret des OAuth-Clients",
+        "es": "Secreto del cliente OAuth"
+      },
+      "placeholder": {
+        "en": "tskey-client-…",
+        "fr": "tskey-client-…",
+        "de": "tskey-client-…",
+        "es": "tskey-client-…"
+      },
+      "required": false
+    },
+    {
+      "key": "tailnet",
+      "type": "string",
+      "label": {
+        "en": "Tailnet",
+        "fr": "Tailnet",
+        "de": "Tailnet",
+        "es": "Tailnet"
+      },
+      "description": {
+        "en": "Leave \"-\" for the tailnet of the token. Otherwise its ID, shown in Settings → General.",
+        "fr": "Laissez « - » pour le tailnet du jeton. Sinon son ID, affiché dans Settings → General.",
+        "de": "Lass „-“ für das Tailnet des Tokens stehen. Sonst seine ID aus Settings → General.",
+        "es": "Deje «-» para la tailnet del token. Si no, su ID, visible en Settings → General."
+      },
+      "placeholder": {
+        "en": "-",
+        "fr": "-",
+        "de": "-",
+        "es": "-"
+      },
+      "required": false,
+      "default": "-"
+    },
+    {
+      "key": "poll_frequency",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval (s)",
+        "fr": "Intervalle de rafraîchissement (s)",
+        "de": "Aktualisierungsintervall (s)",
+        "es": "Intervalo de actualización (s)"
+      },
+      "description": {
+        "en": "How often the tailnet is read, in seconds. One request per refresh, whatever the number of machines.",
+        "fr": "Fréquence de lecture du tailnet, en secondes. Une requête par lecture, quel que soit le nombre de machines.",
+        "de": "Wie oft das Tailnet gelesen wird, in Sekunden. Eine Anfrage pro Abfrage, egal wie viele Geräte.",
+        "es": "Cada cuánto se lee la tailnet, en segundos. Una petición por lectura, sea cual sea el número de máquinas."
+      },
+      "required": false,
+      "default": 60,
+      "min": 30,
+      "max": 3600
+    },
+    {
+      "key": "key_expiry_warning_days",
+      "type": "number",
+      "label": {
+        "en": "Key expiry warning (days)",
+        "fr": "Alerte d'expiration des clés (jours)",
+        "de": "Warnung vor Schlüsselablauf (Tage)",
+        "es": "Aviso de caducidad de claves (días)"
+      },
+      "description": {
+        "en": "A machine whose key expires within this many days fires the \"Key expiring soon\" trigger.",
+        "fr": "Une machine dont la clé expire dans ce délai déclenche « Clé bientôt expirée ».",
+        "de": "Ein Gerät, dessen Schlüssel in dieser Frist abläuft, löst „Schlüssel läuft bald ab“ aus.",
+        "es": "Una máquina cuya clave caduca en este plazo activa «Clave a punto de caducar»."
+      },
+      "required": false,
+      "default": 14,
+      "min": 1,
+      "max": 90
+    },
+    {
+      "key": "include_external",
+      "type": "boolean",
+      "label": {
+        "en": "Include machines shared with you",
+        "fr": "Inclure les machines partagées avec vous",
+        "de": "Mit dir geteilte Geräte einbeziehen",
+        "es": "Incluir las máquinas compartidas con usted"
+      },
+      "description": {
+        "en": "Machines another tailnet shares into yours. Hidden by default: they are not yours to manage.",
+        "fr": "Les machines qu'un autre tailnet partage avec le vôtre. Masquées par défaut : vous ne les gérez pas.",
+        "de": "Geräte, die ein anderes Tailnet mit deinem teilt. Standardmäßig ausgeblendet: Du verwaltest sie nicht.",
+        "es": "Máquinas que otra tailnet comparte con la suya. Ocultas por defecto: usted no las administra."
+      },
+      "required": false,
+      "default": false
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads the tailnet now and lists its machines in the Discovery tab.",
+        "fr": "Lit le tailnet maintenant et liste ses machines dans l'onglet Découverte.",
+        "de": "Liest das Tailnet sofort und listet seine Geräte im Tab „Entdecken“ auf.",
+        "es": "Lee la tailnet ahora y muestra sus máquinas en la pestaña Descubrimiento."
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "connection_changed",
+      "label": {
+        "en": "Machine online or offline",
+        "fr": "Machine en ligne ou hors ligne",
+        "de": "Gerät online oder offline",
+        "es": "Máquina en línea o sin conexión"
+      },
+      "description": {
+        "en": "A machine of the tailnet connected or disconnected.",
+        "fr": "Une machine du tailnet s'est connectée ou déconnectée.",
+        "de": "Ein Gerät des Tailnets hat sich verbunden oder getrennt.",
+        "es": "Una máquina de la tailnet se conectó o desconectó."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Machine",
+            "fr": "Machine",
+            "de": "Gerät",
+            "es": "Máquina"
+          }
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "New state",
+            "fr": "Nouvel état",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          },
+          "options": [
+            {
+              "value": "online",
+              "label": {
+                "en": "Online",
+                "fr": "En ligne",
+                "de": "Online",
+                "es": "En línea"
+              }
+            },
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline",
+                "fr": "Hors ligne",
+                "de": "Offline",
+                "es": "Sin conexión"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Machine name",
+            "fr": "Nom de la machine",
+            "de": "Gerätename",
+            "es": "Nombre de la máquina"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "New state",
+            "fr": "Nouvel état",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          }
+        },
+        {
+          "key": "ip",
+          "type": "string",
+          "label": {
+            "en": "Tailscale IP",
+            "fr": "IP Tailscale",
+            "de": "Tailscale-IP",
+            "es": "IP de Tailscale"
+          }
+        },
+        {
+          "key": "last_seen",
+          "type": "string",
+          "label": {
+            "en": "Last seen",
+            "fr": "Vue pour la dernière fois",
+            "de": "Zuletzt gesehen",
+            "es": "Vista por última vez"
+          }
+        }
+      ]
+    },
+    {
+      "key": "machine_added",
+      "label": {
+        "en": "New machine in the tailnet",
+        "fr": "Nouvelle machine dans le tailnet",
+        "de": "Neues Gerät im Tailnet",
+        "es": "Nueva máquina en la tailnet"
+      },
+      "description": {
+        "en": "A machine joined the tailnet, approved or waiting for approval.",
+        "fr": "Une machine a rejoint le tailnet, approuvée ou en attente d'approbation.",
+        "de": "Ein Gerät ist dem Tailnet beigetreten, freigegeben oder wartend.",
+        "es": "Una máquina se unió a la tailnet, aprobada o pendiente de aprobación."
+      },
+      "fields": [
+        {
+          "key": "authorization",
+          "type": "select",
+          "label": {
+            "en": "Approval",
+            "fr": "Approbation",
+            "de": "Freigabe",
+            "es": "Aprobación"
+          },
+          "options": [
+            {
+              "value": "authorized",
+              "label": {
+                "en": "Approved",
+                "fr": "Approuvée",
+                "de": "Freigegeben",
+                "es": "Aprobada"
+              }
+            },
+            {
+              "value": "pending",
+              "label": {
+                "en": "Waiting for approval",
+                "fr": "En attente d'approbation",
+                "de": "Wartet auf Freigabe",
+                "es": "Pendiente de aprobación"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Machine name",
+            "fr": "Nom de la machine",
+            "de": "Gerätename",
+            "es": "Nombre de la máquina"
+          }
+        },
+        {
+          "key": "authorization",
+          "type": "string",
+          "label": {
+            "en": "Approval",
+            "fr": "Approbation",
+            "de": "Freigabe",
+            "es": "Aprobación"
+          }
+        },
+        {
+          "key": "os",
+          "type": "string",
+          "label": {
+            "en": "Operating system",
+            "fr": "Système d'exploitation",
+            "de": "Betriebssystem",
+            "es": "Sistema operativo"
+          }
+        },
+        {
+          "key": "user",
+          "type": "string",
+          "label": {
+            "en": "Owner",
+            "fr": "Propriétaire",
+            "de": "Besitzer",
+            "es": "Propietario"
+          }
+        },
+        {
+          "key": "ip",
+          "type": "string",
+          "label": {
+            "en": "Tailscale IP",
+            "fr": "IP Tailscale",
+            "de": "Tailscale-IP",
+            "es": "IP de Tailscale"
+          }
+        }
+      ]
+    },
+    {
+      "key": "update_available",
+      "label": {
+        "en": "Tailscale update available",
+        "fr": "Mise à jour Tailscale disponible",
+        "de": "Tailscale-Update verfügbar",
+        "es": "Actualización de Tailscale disponible"
+      },
+      "description": {
+        "en": "A newer Tailscale client is available for a machine.",
+        "fr": "Une version plus récente de Tailscale est disponible pour une machine.",
+        "de": "Für ein Gerät ist eine neuere Tailscale-Version verfügbar.",
+        "es": "Hay una versión más reciente de Tailscale para una máquina."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Machine",
+            "fr": "Machine",
+            "de": "Gerät",
+            "es": "Máquina"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Machine name",
+            "fr": "Nom de la machine",
+            "de": "Gerätename",
+            "es": "Nombre de la máquina"
+          }
+        },
+        {
+          "key": "client_version",
+          "type": "string",
+          "label": {
+            "en": "Installed version",
+            "fr": "Version installée",
+            "de": "Installierte Version",
+            "es": "Versión instalada"
+          }
+        }
+      ]
+    },
+    {
+      "key": "key_expiring",
+      "label": {
+        "en": "Key expiring soon",
+        "fr": "Clé bientôt expirée",
+        "de": "Schlüssel läuft bald ab",
+        "es": "Clave a punto de caducar"
+      },
+      "description": {
+        "en": "A machine's key expires within the warning period set in the configuration.",
+        "fr": "La clé d'une machine expire dans le délai d'alerte choisi dans la configuration.",
+        "de": "Der Schlüssel eines Geräts läuft innerhalb der eingestellten Warnfrist ab.",
+        "es": "La clave de una máquina caduca dentro del plazo de aviso configurado."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Machine",
+            "fr": "Machine",
+            "de": "Gerät",
+            "es": "Máquina"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Machine name",
+            "fr": "Nom de la machine",
+            "de": "Gerätename",
+            "es": "Nombre de la máquina"
+          }
+        },
+        {
+          "key": "days_left",
+          "type": "number",
+          "label": {
+            "en": "Days left",
+            "fr": "Jours restants",
+            "de": "Verbleibende Tage",
+            "es": "Días restantes"
+          }
+        },
+        {
+          "key": "expires",
+          "type": "string",
+          "label": {
+            "en": "Expiry date",
+            "fr": "Date d'expiration",
+            "de": "Ablaufdatum",
+            "es": "Fecha de caducidad"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "refresh_tailnet",
+      "label": {
+        "en": "Refresh the tailnet",
+        "fr": "Actualiser le tailnet",
+        "de": "Tailnet aktualisieren",
+        "es": "Actualizar la tailnet"
+      },
+      "description": {
+        "en": "Reads every machine now and returns the counts.",
+        "fr": "Lit toutes les machines maintenant et renvoie les totaux.",
+        "de": "Liest jetzt alle Geräte und gibt die Anzahlen zurück.",
+        "es": "Lee todas las máquinas ahora y devuelve los totales."
+      },
+      "timeout_seconds": 30,
+      "outputs": [
+        {
+          "key": "machine_count",
+          "type": "number",
+          "label": {
+            "en": "Machines",
+            "fr": "Machines",
+            "de": "Geräte",
+            "es": "Máquinas"
+          }
+        },
+        {
+          "key": "online_count",
+          "type": "number",
+          "label": {
+            "en": "Machines online",
+            "fr": "Machines en ligne",
+            "de": "Geräte online",
+            "es": "Máquinas en línea"
+          }
+        },
+        {
+          "key": "offline_count",
+          "type": "number",
+          "label": {
+            "en": "Machines offline",
+            "fr": "Machines hors ligne",
+            "de": "Geräte offline",
+            "es": "Máquinas sin conexión"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_machine_status",
+      "label": {
+        "en": "Read a machine's status",
+        "fr": "Lire l'état d'une machine",
+        "de": "Gerätestatus lesen",
+        "es": "Leer el estado de una máquina"
+      },
+      "description": {
+        "en": "Returns the state of a machine for the next actions of the scene.",
+        "fr": "Renvoie l'état d'une machine pour les actions suivantes de la scène.",
+        "de": "Gibt den Zustand eines Geräts für die nächsten Aktionen der Szene zurück.",
+        "es": "Devuelve el estado de una máquina para las siguientes acciones de la escena."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Machine",
+            "fr": "Machine",
+            "de": "Gerät",
+            "es": "Máquina"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "online",
+          "type": "boolean",
+          "label": {
+            "en": "Online",
+            "fr": "En ligne",
+            "de": "Online",
+            "es": "En línea"
+          }
+        },
+        {
+          "key": "ip",
+          "type": "string",
+          "label": {
+            "en": "Tailscale IP",
+            "fr": "IP Tailscale",
+            "de": "Tailscale-IP",
+            "es": "IP de Tailscale"
+          }
+        },
+        {
+          "key": "last_seen",
+          "type": "string",
+          "label": {
+            "en": "Last seen",
+            "fr": "Vue pour la dernière fois",
+            "de": "Zuletzt gesehen",
+            "es": "Vista por última vez"
+          }
+        },
+        {
+          "key": "os",
+          "type": "string",
+          "label": {
+            "en": "Operating system",
+            "fr": "Système d'exploitation",
+            "de": "Betriebssystem",
+            "es": "Sistema operativo"
+          }
+        },
+        {
+          "key": "client_version",
+          "type": "string",
+          "label": {
+            "en": "Tailscale version",
+            "fr": "Version de Tailscale",
+            "de": "Tailscale-Version",
+            "es": "Versión de Tailscale"
+          }
+        },
+        {
+          "key": "update_available",
+          "type": "boolean",
+          "label": {
+            "en": "Update available",
+            "fr": "Mise à jour disponible",
+            "de": "Update verfügbar",
+            "es": "Actualización disponible"
+          }
+        },
+        {
+          "key": "key_expiry_disabled",
+          "type": "boolean",
+          "label": {
+            "en": "Key expiry disabled",
+            "fr": "Expiration de la clé désactivée",
+            "de": "Schlüsselablauf deaktiviert",
+            "es": "Caducidad de la clave desactivada"
+          }
+        },
+        {
+          "key": "key_expiry_days",
+          "type": "number",
+          "label": {
+            "en": "Days before the key expires (-1: never)",
+            "fr": "Jours avant expiration de la clé (-1 : jamais)",
+            "de": "Tage bis zum Schlüsselablauf (-1: nie)",
+            "es": "Días antes de que caduque la clave (-1: nunca)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "set_key_expiry",
+      "label": {
+        "en": "Change a machine's key expiry",
+        "fr": "Modifier l'expiration de la clé",
+        "de": "Schlüsselablauf ändern",
+        "es": "Cambiar la caducidad de la clave"
+      },
+      "description": {
+        "en": "Turns key expiry off for a machine, or back on.",
+        "fr": "Désactive l'expiration de la clé d'une machine, ou la réactive.",
+        "de": "Schaltet den Schlüsselablauf eines Geräts aus oder wieder ein.",
+        "es": "Desactiva la caducidad de la clave de una máquina, o la reactiva."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Machine",
+            "fr": "Machine",
+            "de": "Gerät",
+            "es": "Máquina"
+          },
+          "required": true
+        },
+        {
+          "key": "disabled",
+          "type": "boolean",
+          "label": {
+            "en": "Disable key expiry",
+            "fr": "Désactiver l'expiration",
+            "de": "Schlüsselablauf deaktivieren",
+            "es": "Desactivar la caducidad"
+          },
+          "default": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "key_expiry_disabled",
+          "type": "boolean",
+          "label": {
+            "en": "Key expiry disabled",
+            "fr": "Expiration de la clé désactivée",
+            "de": "Schlüsselablauf deaktiviert",
+            "es": "Caducidad de la clave desactivada"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "tailnet",
+      "label": {
+        "en": "Tailscale network",
+        "fr": "Réseau Tailscale",
+        "de": "Tailscale-Netz",
+        "es": "Red Tailscale"
+      },
+      "description": {
+        "en": "Machines online, updates and expiring keys, with the ones that need you.",
+        "fr": "Machines en ligne, mises à jour et clés qui expirent, et celles à traiter.",
+        "de": "Geräte online, Updates und ablaufende Schlüssel, mit allem, was dich braucht.",
+        "es": "Máquinas en línea, actualizaciones y claves que caducan, y lo que requiere atención."
+      },
+      "icon": "globe",
+      "action_timeout_seconds": 30,
+      "settings": [
+        {
+          "key": "filter",
+          "type": "select",
+          "label": {
+            "en": "Machines listed",
+            "fr": "Machines listées",
+            "de": "Angezeigte Geräte",
+            "es": "Máquinas mostradas"
+          },
+          "default": "attention",
+          "options": [
+            {
+              "value": "attention",
+              "label": {
+                "en": "Those that need attention",
+                "fr": "Celles à traiter",
+                "de": "Die Aufmerksamkeit brauchen",
+                "es": "Las que requieren atención"
+              }
+            },
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline only",
+                "fr": "Hors ligne seulement",
+                "de": "Nur offline",
+                "es": "Solo sin conexión"
+              }
+            },
+            {
+              "value": "all",
+              "label": {
+                "en": "All",
+                "fr": "Toutes",
+                "de": "Alle",
+                "es": "Todas"
+              }
+            }
+          ]
+        },
+        {
+          "key": "rows",
+          "type": "number",
+          "label": {
+            "en": "Rows (0 to 8)",
+            "fr": "Lignes (0 à 8)",
+            "de": "Zeilen (0 bis 8)",
+            "es": "Filas (0 a 8)"
+          },
+          "default": 6,
+          "min": 0,
+          "max": 8
+        }
+      ]
+    }
+  ]
+}
