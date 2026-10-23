@@ -8,8 +8,8 @@
     "de": "Überwache die Geräte deines Tailscale-Netzes: Verbindung, Updates und Schlüssel.",
     "es": "Supervise las máquinas de su red Tailscale: conexión, actualizaciones y claves."
   },
-  "version": "1.0.1",
-  "docker_image": "ghcr.io/prohand/gladys-tailscale:1.0.1",
+  "version": "1.0.2",
+  "docker_image": "ghcr.io/prohand/gladys-tailscale:1.0.2",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-tailscale/main/cover.png",
   "categories": ["network", "security"],
