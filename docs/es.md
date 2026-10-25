@@ -9,7 +9,7 @@ Lee la tailnet a través de la **API de Tailscale, en la nube**
 (`api.tailscale.com`). No hay nada que instalar en sus máquinas, y Gladys no
 necesita estar en la tailnet.
 
-Requiere Gladys 5.1 o posterior.
+Requiere Gladys 5.3 o posterior.
 
 ## Antes de empezar
 

@@ -9,7 +9,7 @@ Sie liest das Tailnet über die **Tailscale-API in der Cloud**
 (`api.tailscale.com`). Auf deinen Geräten muss nichts installiert werden, und
 Gladys selbst muss nicht im Tailnet sein.
 
-Erfordert Gladys 5.1 oder neuer.
+Erfordert Gladys 5.3 oder neuer.
 
 ## Bevor du beginnst
 
