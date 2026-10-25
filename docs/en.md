@@ -9,7 +9,7 @@ It reads the tailnet through the **Tailscale API, in the cloud**
 (`api.tailscale.com`). Nothing needs to be installed on your machines, and
 Gladys does not have to be on the tailnet itself.
 
-Requires Gladys 5.1 or later.
+Requires Gladys 5.3 or later.
 
 ## Before you begin
 

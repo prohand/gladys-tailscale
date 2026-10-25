@@ -13,6 +13,8 @@ and the SDK
 User documentation: [English](./docs/en.md) · [Français](./docs/fr.md) ·
 [Deutsch](./docs/de.md) · [Español](./docs/es.md).
 
+Requires **Gladys 5.3.0** or later.
+
 ## What it does
 
 | Gladys feature      | Source (Tailscale API)                       | Read / write |
@@ -99,12 +101,13 @@ integration runs inside its sandboxed container.
 npm run format:check   # Prettier
 npm run lint           # ESLint
 npm test               # node --test
-npx github:GladysAssistant/integration-store .   # store admission checks
+npx github:GladysAssistant/integration-store --skip-image-check .   # store checks
 ```
 
 The same checks run in CI on every push to `main` and every pull request, on
-Node 22 and 24; pull requests also run the store admission checks and build
-the Docker image. Tests never touch the network: the Tailscale API is faked
+Node 22 and 24; pull requests also run the store admission checks (image
+skipped: the Release workflow runs the full check once the image is published)
+and build the Docker image. Tests never touch the network: the Tailscale API is faked
 in [`test/helpers/fakeTailscale.js`](./test/helpers/fakeTailscale.js) and
 Gladys by the SDK's `createFakeGladys()`.
 

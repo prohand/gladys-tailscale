@@ -26,11 +26,12 @@ node --test --test-name-pattern "widget"    # tests whose name matches
 npm run lint                                # eslint .
 npm run format:check                        # prettier --check . (CI gate)
 npm run format                              # prettier --write .
-npx github:GladysAssistant/integration-store .   # store admission checks
+npx github:GladysAssistant/integration-store --skip-image-check .   # store checks
 ```
 
 The CI (`.github/workflows/ci.yml`) runs `format:check`, `lint` and `test` on Node 22 and 24, and on
-pull requests the store checks and a Docker build: run the three commands before pushing.
+pull requests the store checks (image skipped: the Release workflow re-runs them in full once the
+image is published) and a Docker build: run the three commands before pushing.
 
 Releases: **Actions → Release** only (bumps `package.json`, manifest `version` + `docker_image`,
 rolls `CHANGELOG.md`, re-runs Prettier, tags, builds the multi-arch image, publishes the GitHub
@@ -87,7 +88,8 @@ test/                        node --test, SDK fake Gladys + test/helpers/fakeTai
   (`### Added`, `Changed`, `Fixed`, `Removed`, `Security`). Never write a version heading.
 - **Manifest.** Every text is `{ en, fr, de, es }` (`label`, `description`, `placeholder`). The
   catalog `description` holds 10 to 100 characters per language, a widget label 3 to 30.
-  `scene_triggers`, `scene_actions` and `widgets` need `gladys_version >=5.1.0`.
+  `scene_triggers`, `scene_actions` and `widgets` need `gladys_version >=5.1.0`, the catalog
+  `keywords` `>=5.3.0` (the floor today); no `countries`, the integration is worldwide.
   `test/manifest.test.js` ties the manifest to the code: change both sides together.
 - **Widget content** must pass `validateWidgetContent` with `[]` (see `test/app.test.js`): mind the
   length caps (button and link labels 24, badge 16, status label/value 40, caption 80).

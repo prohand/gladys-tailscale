@@ -58,17 +58,47 @@ test('the categories stay inside the vocabulary the store indexes', () => {
     'notifications',
     'assistants',
     'services',
+    'transport',
+    'vehicles',
+    'servers',
+    'leisure',
   ];
   const { categories } = manifest;
   assert.ok(categories.length >= 1 && categories.length <= 3);
+  assert.equal(new Set(categories).size, categories.length);
   for (const category of categories) {
     assert.ok(vocabulary.includes(category), `unknown category "${category}"`);
   }
 });
 
-test('the Gladys floor covers the scene and widget declarations', () => {
+test('the search keywords are 1 to 10 unique terms of 2 to 30 characters', () => {
+  assert.ok(Array.isArray(manifest.keywords));
+  assert.ok(manifest.keywords.length >= 1 && manifest.keywords.length <= 10);
+  const normalized = manifest.keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, normalized.length, 'keywords must be unique');
+  for (const keyword of manifest.keywords) {
+    assert.equal(typeof keyword, 'string');
+    const { length } = keyword.trim();
+    assert.ok(length >= 2 && length <= 30, `keyword "${keyword}" has ${length} characters`);
+  }
+});
+
+test('the integration is not restricted to some countries', () => {
+  // Tailscale works the same everywhere: declaring countries would hide the
+  // integration from the catalog of every other country.
+  assert.equal(manifest.countries, undefined);
+});
+
+test('the Gladys floor covers every field the manifest declares', () => {
+  // Older cores reject a manifest field they do not know: the scene and widget
+  // declarations need 5.1, `keywords`, `countries` and `music` need 5.3.
   const [major, minor] = manifest.gladys_version.replace(/^>=/, '').split('.').map(Number);
-  assert.ok(major > 5 || (major === 5 && minor >= 1), `got ${manifest.gladys_version}`);
+  const atLeast = (wantedMajor, wantedMinor) =>
+    major > wantedMajor || (major === wantedMajor && minor >= wantedMinor);
+  assert.ok(atLeast(5, 1), `got ${manifest.gladys_version}`);
+  if (['keywords', 'countries', 'music'].some((field) => manifest[field] !== undefined)) {
+    assert.ok(atLeast(5, 3), `keywords need Gladys 5.3, got ${manifest.gladys_version}`);
+  }
 });
 
 test('config_schema defaults stay consistent with DEFAULT_CONFIG', () => {
