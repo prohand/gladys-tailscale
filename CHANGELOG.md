@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-25
+
 ### Added
 
 - Catalog search keywords (VPN, WireGuard, tailnet, exit node, subnet
@@ -50,7 +52,8 @@ the notes of the version's GitHub Release.
 - English, French, German and Spanish translations (configuration screen,
   messages, widget, documentation).
 
-[Unreleased]: https://github.com/prohand/gladys-tailscale/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/prohand/gladys-tailscale/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/prohand/gladys-tailscale/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/prohand/gladys-tailscale/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/prohand/gladys-tailscale/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/prohand/gladys-tailscale/releases/tag/v1.0.0
