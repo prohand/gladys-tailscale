@@ -10,6 +10,10 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-16
+
+- Maintenance release, no functional change.
+
 ## [1.1.0] - 2026-10-25
 
 ### Added
@@ -52,7 +56,8 @@ the notes of the version's GitHub Release.
 - English, French, German and Spanish translations (configuration screen,
   messages, widget, documentation).
 
-[Unreleased]: https://github.com/prohand/gladys-tailscale/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/prohand/gladys-tailscale/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/prohand/gladys-tailscale/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/prohand/gladys-tailscale/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/prohand/gladys-tailscale/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/prohand/gladys-tailscale/compare/v1.0.0...v1.0.1
